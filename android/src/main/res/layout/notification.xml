@@ -1,0 +1,108 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
+    android:layout_width="fill_parent"
+    android:layout_height="120dp"
+    android:background="#34A0CE"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:paddingHorizontal="10dp"
+        android:paddingTop="10dp"
+        >
+        <ImageView
+            android:id="@+id/lkLogoImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:paddingTop="10dp"
+            android:src="@drawable/lk_logo_white"
+            />
+
+        <TextView
+            android:id="@+id/lkTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/lkLogoImageView"
+            android:fontFamily="@font/brandon_medium"
+            android:paddingEnd="10dp"
+            android:paddingStart="0dp"
+            android:paddingTop="10dp"
+            android:text="Title of the notification"
+            android:textColor="#FFFFFF"
+            android:textSize="13dp" />
+
+        <TextView
+            android:id="@+id/lkText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lkTitle"
+            android:layout_marginTop="7dp"
+            android:clickable="false"
+            android:fontFamily="@font/brandon_medium"
+            android:paddingStart="20dp"
+            android:text=""
+            android:textColor="#FFFFFF"
+            android:textSize="14dp" />
+
+        <ImageView
+            android:id="@+id/lkUserAvatar"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+        />
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/lkButtonsBar"
+        android:layout_width="fill_parent"
+        android:layout_height="42dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="62dp"
+        android:background="#8043688A"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/lkButton1"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="YES"
+            android:visibility="gone"
+            android:fontFamily="@font/brandon_medium"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/lkButton2"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="NO"
+            android:visibility="gone"
+            android:fontFamily="@font/brandon_medium"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF" />
+        <Button
+            android:id="@+id/lkButton3"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="MAY BE"
+            android:visibility="gone"
+            android:fontFamily="@font/brandon_medium"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+</RelativeLayout>

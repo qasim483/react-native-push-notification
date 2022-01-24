@@ -1,3 +1,4 @@
+// @custom
 package com.dieam.reactnativepushnotification.modules;
 
 import android.app.Application;
@@ -53,6 +54,15 @@ public class RNPushNotificationActions extends BroadcastReceiver {
             manager.cancel(notificationID);
         }
       }
+        
+        // @custom
+        // IF IT WAS A FOREGROUND SERVICE THEN STOP IT.
+        if (bundle.containsKey ("asForegroundService") && bundle.getBoolean ("asForegroundService"))
+        {
+            context.stopService(new Intent(context, LKNotificationService.class));
+            Intent it = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            context.sendBroadcast(it);
+        }
 
       boolean invokeApp = bundle.getBoolean("invokeApp", true);
 
