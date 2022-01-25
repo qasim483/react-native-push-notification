@@ -16,7 +16,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -25,12 +24,10 @@ import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.text.Spanned;
 import android.util.Log;
-import androidx.core.app.RemoteInput;
+import android.view.View;
+import android.widget.RemoteViews;
 
-import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationCompat;
-import androidx.core.text.HtmlCompat;
-
+import com.dieam.reactnativepushnotification.R;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -46,9 +43,14 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.RemoteInput;
+import androidx.core.text.HtmlCompat;
+
+import static com.dieam.reactnativepushnotification.modules.RNPushNotification.KEY_TEXT_REPLY;
 import static com.dieam.reactnativepushnotification.modules.RNPushNotification.LOG_TAG;
 import static com.dieam.reactnativepushnotification.modules.RNPushNotificationAttributes.fromJson;
-import static com.dieam.reactnativepushnotification.modules.RNPushNotification.KEY_TEXT_REPLY;
 
 public class RNPushNotificationHelper {
     public static final String PREFERENCES_KEY = "rn_push_notification";
@@ -104,7 +106,7 @@ public class RNPushNotificationHelper {
     
     private PendingIntent toScheduleNotificationIntent(Bundle bundle) {
         try {
-            int notificationID = Integer.parseInt(bundle.getString("id"));
+            int notificationID = Integer.parseInt (bundle.getString ("id"));
             
             Intent notificationIntent = new Intent(context, RNPushNotificationPublisher.class);
             notificationIntent.putExtra(RNPushNotificationPublisher.NOTIFICATION_ID, notificationID);
@@ -406,7 +408,7 @@ public class RNPushNotificationHelper {
                             .bigLargeIcon(bigLargeIconBitmap);
             }
             else {
-                String bigText = bundle.getString("bigText");
+                bigText = bundle.getString("bigText");
                 
                 if (bigText == null) {
                     style = new NotificationCompat.BigTextStyle().bigText(message);
@@ -436,12 +438,9 @@ public class RNPushNotificationHelper {
             }
             
             Uri soundUri = null;
-            
             if (!bundle.containsKey("playSound") || bundle.getBoolean("playSound")) {
                 String soundName = bundle.getString("soundName");
-                
                 soundUri = getSoundUri(soundName);
-                
                 notification.setSound(soundUri);
             }
             
@@ -452,17 +451,25 @@ public class RNPushNotificationHelper {
             if (bundle.containsKey("ongoing") || bundle.getBoolean("ongoing")) {
                 notification.setOngoing(bundle.getBoolean("ongoing"));
             }
-            
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            {
                 notification.setCategory(NotificationCompat.CATEGORY_CALL);
-                
-                String color = bundle.getString("color");
-                int defaultColor = this.config.getNotificationColor();
-                if (color != null) {
-                    notification.setColor(Color.parseColor(color));
-                } else if (defaultColor != -1) {
-                    notification.setColor(defaultColor);
-                }
+//                if (bundle.containsKey ("color")) {
+//                    Integer color = Integer.valueOf (bundle.getString ("color"));
+//                    Log.d ("color_notification", "" + color);
+//                    Boolean colorized = bundle.getBoolean ("colorized");
+//                    notification.setColor (color);
+//                    if (colorized != null) {
+//                        notification.setColorized (colorized);
+//                    }
+//                }
+//                else
+//                {
+//                    int defaultColor = this.config.getNotificationColor ();
+//                    notification.setColor(defaultColor);
+//                }
+                int defaultColor = this.config.getNotificationColor ();
+                notification.setColor(defaultColor);
             }
             
             int notificationID = Integer.parseInt(notificationIdString);
@@ -471,18 +478,17 @@ public class RNPushNotificationHelper {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
             
             NotificationManager notificationManager = notificationManager();
-            
             long[] vibratePattern = new long[]{0};
-            
-            if (!bundle.containsKey("vibrate") || bundle.getBoolean("vibrate")) {
-                long vibration = bundle.containsKey("vibration") ? (long) bundle.getDouble("vibration") : DEFAULT_VIBRATION;
+            if (!bundle.containsKey("vibrate") || bundle.getBoolean("vibrate"))
+            {
+                long vibration = bundle.containsKey ("vibration") ? (long) bundle.getDouble("vibration") : DEFAULT_VIBRATION;
                 if (vibration == 0)
                     vibration = DEFAULT_VIBRATION;
-                
                 vibratePattern = new long[]{0, vibration};
-                
-                notification.setVibrate(vibratePattern);
+                notification.setVibrate (vibratePattern);
             }
+            Long timeoutAfter = (long) bundle.getDouble("timeoutAfter");
+            Log.d ("TimeoutAfter", timeoutAfter+"");
             
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 // Define the shortcutId
@@ -491,7 +497,6 @@ public class RNPushNotificationHelper {
                 if (shortcutId != null) {
                     notification.setShortcutId(shortcutId);
                 }
-                Long timeoutAfter = (long) bundle.getDouble("timeoutAfter");
                 
                 // IF THIS IS NOT THE FOREGROUND SERVICE THEN WE WILL CHECK FOR TIMEOUT.
                 // BECAUSE FOREGROUND SERVICES CAN NOT BE DISMISSED FROM HERE.
@@ -526,21 +531,21 @@ public class RNPushNotificationHelper {
             }
             if (bundle.containsKey ("showBubble") && bundle.getBoolean ("showBubble"))
             {
-                Log.d ("show_bubble","yes");
-                Person person = new Person.Builder ()
-                                    .setBot(true)
-                                    .setName("A Bubble Bot")
-                                    .setImportant(true)
-                                    .build();
-                notification.setBubbleMetadata(
-                    new NotificationCompat.BubbleMetadata.Builder()
-                        .setDesiredHeight(600)
-                        .setIntent(pendingIntent)
-                        .setAutoExpandBubble(true)
-                        .setSuppressNotification(true)
-                        .setIcon(IconCompat.createWithResource(context, R.drawable.icon))
-                        .build()
-                ).addPerson(String.valueOf (person));
+//                Log.d ("show_bubble","yes");
+//                Person person = new Person.Builder ()
+//                                    .setBot(true)
+//                                    .setName("A Bubble Bot")
+//                                    .setImportant(true)
+//                                    .build();
+//                notification.setBubbleMetadata(
+//                    new NotificationCompat.BubbleMetadata.Builder()
+//                        .setDesiredHeight(600)
+//                        .setIntent(pendingIntent)
+//                        .setAutoExpandBubble(true)
+//                        .setSuppressNotification(true)
+//                        .setIcon(IconCompat.createWithResource(context, R.drawable.icon))
+//                        .build()
+//                ).addPerson(String.valueOf (person));
             }
             
             Log.d ("debugNotification", "step3");

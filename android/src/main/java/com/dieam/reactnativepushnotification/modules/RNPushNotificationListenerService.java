@@ -22,31 +22,36 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static com.dieam.reactnativepushnotification.modules.RNPushNotification.LOG_TAG;
 
 public class RNPushNotificationListenerService extends FirebaseMessagingService {
-    
+
     private RNReceivedMessageHandler mMessageReceivedHandler;
     private FirebaseMessagingService mFirebaseServiceDelegate;
-    
+
     public RNPushNotificationListenerService() {
         super();
         this.mMessageReceivedHandler = new RNReceivedMessageHandler(this);
     }
-    
+
     public RNPushNotificationListenerService(FirebaseMessagingService delegate) {
         super();
         this.mFirebaseServiceDelegate = delegate;
         this.mMessageReceivedHandler = new RNReceivedMessageHandler(delegate);
     }
-    
+
     @Override
     public void onNewToken(String token) {
         final String deviceToken = token;
         final FirebaseMessagingService serviceRef = (this.mFirebaseServiceDelegate == null) ? this : this.mFirebaseServiceDelegate;
         Log.d(LOG_TAG, "Refreshed token: " + deviceToken);
-        
+
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
             public void run() {
@@ -72,20 +77,20 @@ public class RNPushNotificationListenerService extends FirebaseMessagingService 
             }
         });
     }
-    
+
     private void handleNewToken(ReactApplicationContext context, String token) {
         RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
-        
+
         WritableMap params = Arguments.createMap();
         params.putString("deviceToken", token);
         jsDelivery.sendEvent("remoteNotificationsRegistered", params);
     }
-    
+
     @Override
     public void onMessageReceived(RemoteMessage message)
     {
         mMessageReceivedHandler.handleReceivedMessage(message);
-        
+    
         // CHECK IF MESSAGE CONTAINS A DATA PAYLOAD.
         if (message.getData().size() > 0) {
             try
@@ -115,7 +120,7 @@ public class RNPushNotificationListenerService extends FirebaseMessagingService 
             Context context = getApplicationContext ();
             NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
             int dndStatus = notificationManager.getCurrentInterruptionFilter ();
-            
+    
             // USE AUDIO MANAGER TO GET THE RINGTONE AND MEDIA VOLUME.
             AudioManager am = (AudioManager) context.getSystemService(context.AUDIO_SERVICE);
             int volumeLevelRing = am.getStreamVolume(AudioManager.STREAM_RING);
@@ -131,10 +136,10 @@ public class RNPushNotificationListenerService extends FirebaseMessagingService 
             Log.d ("OnMessageFCM","in try");
             JSONObject callData = new JSONObject ();
             JSONObject deviceData = new JSONObject ();
-            
+    
             // CALL BATTERY MANAGER SERVICE TO GET THE DEVICE BATTERY.
             BatteryManager batteryManager = (BatteryManager) context.getSystemService (context.BATTERY_SERVICE);
-            
+    
             // GET THE BATTERY PERCENTAGE AND STORE IT IN A INT VARIABLE
             int batteryLevel = batteryManager.getIntProperty (BatteryManager.BATTERY_PROPERTY_CAPACITY);
             
@@ -157,21 +162,21 @@ public class RNPushNotificationListenerService extends FirebaseMessagingService 
         String url = "https://letskinect.com/lkpserver/api/call/log/update";
         Log.d ("updateDidMobileRing", url);
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                                                        ( Request.Method.POST, url, params, new Response.Listener<JSONObject>()
-                                                        {
-                                                            @Override
-                                                            public void onResponse (JSONObject response)
-                                                            {
-                                                                Log.d("wasFCMPayloadReceived",response.toString ());
-                                                            }
-                                                        },new Response.ErrorListener()
-                                                        {
-                                                            @Override
-                                                            public void onErrorResponse(VolleyError error)
-                                                            {
-                                                                Log.d("wasFCMPayloadReceived","Something went wrong. "+ error);
-                                                            }
-                                                        });
+        ( Request.Method.POST, url, params, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse (JSONObject response)
+            {
+                Log.d("wasFCMPayloadReceived",response.toString ());
+            }
+        },new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("wasFCMPayloadReceived","Something went wrong. "+ error);
+            }
+        });
         //VolleyController.getInstance(CallNotificationService.this).addToRequestQueue(jsonObjectRequest);
         RequestQueue queue = Volley.newRequestQueue( getApplicationContext() );
         queue.add(jsonObjectRequest);
