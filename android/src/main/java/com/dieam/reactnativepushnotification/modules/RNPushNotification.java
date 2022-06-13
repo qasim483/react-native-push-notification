@@ -146,7 +146,6 @@ public class RNPushNotification extends ReactContextBaseJavaModule implements Ac
                           Log.e(LOG_TAG, "exception", task.getException());
                           return;
                       }
-
                       WritableMap params = Arguments.createMap();
                       params.putString("deviceToken", task.getResult());
                       fMjsDelivery.sendEvent("remoteNotificationsRegistered", params);
